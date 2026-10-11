@@ -1,11 +1,14 @@
 #!/bin/bash
-# Creates a self-signed "Keytalk Local Signing" code-signing certificate in
-# your login keychain. build.sh signs with it when present, so macOS keeps
-# Keytalk's Accessibility permission across rebuilds. The certificate is only
-# good for signing on this Mac.
+# Creates a self-signed code-signing certificate in your login keychain.
+# build.sh signs with it when present, so macOS keeps Keytalk's Accessibility
+# permission across rebuilds.
+#
+# Usage: scripts/make-signing-cert.sh [NAME]
+#   NAME defaults to "Keytalk Local Signing". Maintainers create
+#   "Keytalk Release Signing" once and sign every release with it.
 set -euo pipefail
 
-NAME="Keytalk Local Signing"
+NAME="${1:-Keytalk Local Signing}"
 if security find-identity -p codesigning | grep -qF "\"$NAME\""; then
   echo "'$NAME' already exists in your keychain."
   exit 0

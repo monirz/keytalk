@@ -6,3 +6,6 @@ build/
 
 # Local Claude Code settings
 .claude/
+
+# Release zips
+dist/

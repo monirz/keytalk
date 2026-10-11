@@ -5,11 +5,11 @@ you're using. It's a small, native macOS menu bar app that turns your speech
 into text with Apple's built-in speech recognition. You don't need an
 account, an API key, or a subscription.
 
-This README is for Mac users who are comfortable building an app from source.
-It covers what Keytalk does, how to build it, and how to use it.
+This README is for Mac users. It covers what Keytalk does, how to install it,
+and how to use it.
 
-> **Status:** early preview (0.1). Keytalk works day to day, but there's no
-> prebuilt download yet. You build it from source in about a minute.
+> **Status:** early preview (0.1). Keytalk works day to day. Expect rough
+> edges, and please report them as GitHub issues.
 
 ## Why Keytalk
 
@@ -26,18 +26,38 @@ It covers what Keytalk does, how to build it, and how to use it.
 - **Leaves your clipboard alone.** Keytalk restores whatever you'd copied
   after it pastes, and it marks its own text so clipboard managers skip it.
 
-## Before you begin
+## Install with Homebrew
 
-You need the following:
+Keytalk runs on Macs with Apple silicon and macOS 12 or later.
 
-- A Mac with Apple silicon, running macOS 12 or later.
-- The Xcode Command Line Tools. To install them, run the following command:
+1. Install Keytalk:
 
-  ```sh
-  xcode-select --install
-  ```
+   ```sh
+   brew install --cask monirz/tap/keytalk
+   ```
 
-## Build Keytalk
+1. Open Keytalk from your `Applications` folder.
+
+   Keytalk isn't notarized by Apple yet, so the first time, macOS says that
+   it can't verify Keytalk. Click **Done**.
+1. In **System Settings** > **Privacy & Security**, click **Open Anyway**
+   next to the message about Keytalk, and then confirm.
+
+You only need to do this once. Every Keytalk release is signed with the same
+certificate, so upgrades open normally and keep their permissions.
+
+To upgrade Keytalk, run `brew upgrade --cask keytalk`.
+
+## Build from source
+
+If you'd rather build Keytalk yourself, you need the Xcode Command Line
+Tools. To install them, run the following command:
+
+```sh
+xcode-select --install
+```
+
+To build Keytalk, do the following:
 
 1. Clone the repository and go into it:
 
@@ -67,6 +87,10 @@ You need the following:
    step, the build prints a warning and signs the app without a certificate.
 
 1. Optional: Move `build/Keytalk.app` to your `Applications` folder.
+
+Run either the Homebrew version or your own build, not both. They share the
+same app ID but have different signatures, so macOS gives permissions to
+only one of them at a time.
 
 ## Set up permissions
 
@@ -188,6 +212,32 @@ The source is in [`Sources/`](Sources/):
 | `Transcriber.swift` | Records the microphone and turns the audio into text. |
 | `TextInserter.swift` | Pastes the text and restores the clipboard. |
 | `Indicator.swift` | Shows the status pill at the bottom of the screen. |
+
+## Release a new version
+
+This section is for maintainers. Every release must be signed with the same
+**Keytalk Release Signing** certificate, because macOS ties users'
+permissions to it.
+
+1. The first time only, create the certificate:
+
+   ```sh
+   ./scripts/make-signing-cert.sh "Keytalk Release Signing"
+   ```
+
+   Back it up: in Keychain Access, export the certificate with its private
+   key as a `.p12` file, and store the file somewhere safe. If you lose it,
+   every user has to grant Keytalk's permissions again after the next
+   upgrade.
+1. Build the release:
+
+   ```sh
+   ./scripts/release.sh VERSION
+   ```
+
+   Replace `VERSION` with the new version number, for example `0.2.0`. The
+   script writes `dist/Keytalk-VERSION.zip` and updates the cask in
+   `packaging/homebrew/keytalk.rb`, and then prints the remaining steps.
 
 ## License
 

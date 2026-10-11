@@ -4,6 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 APP=build/Keytalk.app
+VERSION="${KEYTALK_VERSION:-0.1.0}"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS"
 
@@ -11,7 +12,7 @@ swiftc -O -target arm64-apple-macos12 \
   -framework Cocoa -framework AVFoundation -framework Speech -framework Carbon \
   Sources/*.swift -o "$APP/Contents/MacOS/Keytalk"
 
-cat > "$APP/Contents/Info.plist" <<'PLIST'
+cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -20,7 +21,8 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
   <key>CFBundleIdentifier</key><string>com.monirz.keytalk</string>
   <key>CFBundleName</key><string>Keytalk</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.1</string>
+  <key>CFBundleShortVersionString</key><string>$VERSION</string>
+  <key>CFBundleVersion</key><string>$VERSION</string>
   <key>LSMinimumSystemVersion</key><string>12.0</string>
   <key>LSUIElement</key><true/>
   <key>NSMicrophoneUsageDescription</key><string>Keytalk records your voice while you hold the dictation key.</string>
